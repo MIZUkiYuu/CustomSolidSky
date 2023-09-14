@@ -1,0 +1,2 @@
+# CustomSolidSky
+Custom sky color
