@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.mizukiyuu.customsolidsky.mixin.client",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "gui.GameRendererMixin",
+    "gui.InGameHudMixin",
+    "gui.OptionsScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ]
+}

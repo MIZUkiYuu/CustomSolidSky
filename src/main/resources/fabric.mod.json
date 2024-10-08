@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "customsolidsky",
+  "version": "1.0-SNAPSHOT",
+  "name": "CustomSolidSky",
+  "description": "",
+  "authors": ["MIZUkiYuu"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/customsolidsky/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.mizukiyuu.customsolidsky.client.CustomsolidskyClient"
+    ],
+    "main": [
+      "me.mizukiyuu.customsolidsky.Customsolidsky"
+    ]
+  },
+  "mixins": [
+    "customsolidsky.mixins.json",
+    {
+      "config": "customsolidsky.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "accessWidener": "customsolidsky.accesswidener",
+  "depends": {
+    "fabricloader": ">=0.16.2",
+    "fabric": "*",
+    "minecraft": ">=1.21"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "customsolidsky.commands.skycolor.empty": "String is empty",
+  "customsolidsky.commands.skycolor.no_match": "String \"%s\" does not match \"#RRGGBB\"",
+
+  "customsolidsky.options.screen.title": "sky color option screen"
+}

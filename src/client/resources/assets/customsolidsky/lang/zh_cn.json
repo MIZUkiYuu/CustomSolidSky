@@ -1,0 +1,7 @@
+{
+  "customsolidsky.commands.skycolor.empty": "内容为空",
+  "customsolidsky.commands.skycolor.no_match": "\"%s\" 不匹配格式 \"#RRGGBB\"",
+
+  "customsolidsky.options.screen.title": "天空颜色设置界面"
+
+}
