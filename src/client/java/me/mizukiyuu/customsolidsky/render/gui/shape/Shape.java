@@ -23,8 +23,9 @@ public abstract class Shape<T extends  Shape<T>> {
     protected Rect boundingRect = new Rect(0, 0, 0, 0);
 
     // stroke
-    protected T stroke;
     protected float strokeSize;
+    protected Color strokeColor;
+    protected Color previousColor;
 
     // specify rendering process
     protected Consumer<DrawContext> renderConsumer;
@@ -111,21 +112,21 @@ public abstract class Shape<T extends  Shape<T>> {
         return boundingRect;
     }
 
-    public T getStroke() {
-        return stroke;
-    }
-
-    public T setStroke(T stroke) {
-        this.stroke = stroke;
-        return (T) this;
-    }
-
     public float getStrokeSize() {
         return strokeSize;
     }
 
     public T setStrokeSize(float strokeSize) {
         this.strokeSize = strokeSize;
+        return (T) this;
+    }
+
+    public Color getStrokeColor() {
+        return strokeColor;
+    }
+
+    public T setStrokeColor(Color strokeColor) {
+        this.strokeColor = strokeColor;
         return (T) this;
     }
 
@@ -142,7 +143,8 @@ public abstract class Shape<T extends  Shape<T>> {
 
 
     public abstract T clone();
-    public abstract void updateStroke();
+    public abstract void enableStroke();
+    public abstract void disableStroke();
     public abstract boolean inside(float x, float y);
     public abstract void updateBoundingRect();
     public abstract Consumer<DrawContext> defaultRenderConsumer();
@@ -154,10 +156,8 @@ public abstract class Shape<T extends  Shape<T>> {
      * @param color the color of the stroke
      */
     public T stroke(float size, Color color){
-        strokeSize = size;
-        setStroke(clone());
-        stroke.setColor(color);
-        updateStroke();
+        setStrokeSize(size);
+        setStrokeColor(color);
         return (T) this;
     }
 
@@ -165,8 +165,7 @@ public abstract class Shape<T extends  Shape<T>> {
         if(strokeSize == 0){
             RenderUtil.renderShape(drawContext, this);
         }else {
-            updateStroke();
-            RenderUtil.renderShapeWithStencil(drawContext, this, stroke);
+            RenderUtil.renderShapeWithStencil(drawContext, this);
         }
     }
 

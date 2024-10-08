@@ -40,7 +40,12 @@ public class CircleShape extends Shape<CircleShape> {
     }
 
     @Override
-    public void updateStroke() {
+    public void enableStroke() {
+    }
+
+    @Override
+    public void disableStroke() {
+
     }
 
     float subX, subY;

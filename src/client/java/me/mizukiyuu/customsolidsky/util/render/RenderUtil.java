@@ -59,7 +59,15 @@ public class RenderUtil {
         drawContext.draw();
     }
 
-    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape, Shape<?> larger_shape){
+    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape) {
+        renderShapeWithStencil(drawContext, shape, drawContext1 -> {
+            shape.enableStroke();
+            shape.getRenderConsumer().accept(drawContext1);
+            shape.disableStroke();
+        });
+    }
+
+    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape, Consumer<DrawContext> larger_shape){
 
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
@@ -80,7 +88,7 @@ public class RenderUtil {
         RenderSystem.disableDepthTest();
 
         // render large shape
-        larger_shape.getRenderConsumer().accept(drawContext);
+        larger_shape.accept(drawContext);
         drawContext.getVertexConsumers().draw();
 
         // reset

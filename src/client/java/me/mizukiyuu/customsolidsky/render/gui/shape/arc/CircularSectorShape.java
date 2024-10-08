@@ -28,7 +28,12 @@ public class CircularSectorShape extends ArcShape<CircularSectorShape> {
     }
 
     @Override
-    public void updateStroke() {
+    public void enableStroke() {
+
+    }
+
+    @Override
+    public void disableStroke() {
 
     }
 

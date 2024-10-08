@@ -23,7 +23,7 @@ public class SliderWidget extends Widget {
 
     @Override
     public void init() {
-        rect = new RectShape(x, y,  80, 80, 5, SLIDER_COLORS)
+        rect = new RectShape(x, y,  80, 80, 5, Color.of(Color.WHITE).setAlpha(0.6f))
                 .stroke(8, new Color(Color.RED).setAlpha(0.6f));
     }
 

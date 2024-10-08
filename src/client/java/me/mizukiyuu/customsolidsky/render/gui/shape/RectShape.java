@@ -80,8 +80,16 @@ public class RectShape extends Shape<RectShape> {
     }
 
     @Override
-    public void updateStroke() {
-        stroke.setPos(x - strokeSize, y - strokeSize).setDim(width + strokeSize * 2, height + strokeSize * 2);
+    public void enableStroke() {
+        setPos(x - strokeSize, y - strokeSize).setDim(width + strokeSize * 2, height + strokeSize * 2);
+        previousColor = getColor();
+        setColor(strokeColor);
+    }
+
+    @Override
+    public void disableStroke() {
+        setPos(x + strokeSize, y + strokeSize).setDim(width - strokeSize * 2, height - strokeSize * 2);
+        setColor(previousColor);
     }
 
     @Override
