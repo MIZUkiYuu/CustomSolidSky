@@ -10,6 +10,9 @@ public abstract class ArcShape<T extends ArcShape<T>> extends Shape<T> {
     protected int degree_start;
     protected int degree_end;
 
+    protected float previousRadius;
+
+
     public ArcShape(float x, float y, float radius, int degree_start, int degree_end, List<Color> colorList) {
         super(x, y, colorList);
         this.radius = radius;

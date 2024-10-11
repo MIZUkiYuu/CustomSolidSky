@@ -4,6 +4,7 @@
   "package": "me.mizukiyuu.customsolidsky.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "gui.GameRendererAccessor",
     "gui.GameRendererMixin",
     "gui.InGameHudMixin",
     "gui.OptionsScreenMixin"

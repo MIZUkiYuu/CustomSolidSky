@@ -1,12 +1,9 @@
 package me.mizukiyuu.customsolidsky.render.gui.shape.arc;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
-import me.mizukiyuu.customsolidsky.render.gui.shape.Rect;
 import me.mizukiyuu.customsolidsky.util.math.MathM;
-import me.mizukiyuu.customsolidsky.util.math.Vec2f;
 import me.mizukiyuu.customsolidsky.util.render.RenderUtil;
 import net.minecraft.client.gui.DrawContext;
-import org.joml.Vector4f;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -29,12 +26,15 @@ public class CircularSectorShape extends ArcShape<CircularSectorShape> {
 
     @Override
     public void enableStroke() {
+        previousRadius = radius;
+        previousColor = getColor();
 
+        setRadius(radius + strokeSize).setColor(strokeColor);
     }
 
     @Override
     public void disableStroke() {
-
+        setRadius(previousRadius).setColor(previousColor);
     }
 
     @Override
@@ -42,9 +42,32 @@ public class CircularSectorShape extends ArcShape<CircularSectorShape> {
         return false;
     }
 
+    private final List<Float> horizontalList = new ArrayList<>();
+    private final List<Float> verticalList = new ArrayList<>();
     @Override
     public void updateBoundingRect() {
-        boundingRect.set(calculateMiniBoundingRect());
+        horizontalList.add(x);
+        verticalList.add(y);
+
+        horizontalList.add(MathM.COS[degree_start] * radius + x);
+        verticalList.add(MathM.SIN[degree_start] * radius + y);
+
+        horizontalList.add(MathM.COS[degree_end] * radius + x);
+        verticalList.add(MathM.SIN[degree_end] * radius + y);
+
+        for (int a = (int) (Math.ceil(degree_start * 4 / 360.0f)) * 90; a < degree_end; a += 90)
+        {
+            horizontalList.add(MathM.COS[a] * radius + x);
+            verticalList.add(MathM.SIN[a] * radius + y);
+        }
+
+        horizontalList.sort(Comparator.naturalOrder());
+        verticalList.sort(Comparator.naturalOrder());
+
+        boundingRect.set(horizontalList.getFirst(), verticalList.getFirst(), horizontalList.getLast() - horizontalList.getFirst(), verticalList.getLast() - verticalList.getFirst());
+
+        horizontalList.clear();
+        verticalList.clear();
     }
 
     @Override
@@ -53,38 +76,8 @@ public class CircularSectorShape extends ArcShape<CircularSectorShape> {
             vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderUtil.GUI_TRIANGLE_FAN);
             matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
 
-            float x = getX();
-            float y = getY();
-            int depth = getDepth();
-            Color color = getColor();
-
-            RenderUtil.buildArcVertex(vertexConsumer, matrix4f, x, y, depth, degree_start, degree_end, radius, color, true);
-            RenderUtil.buildPointVertex(vertexConsumer, matrix4f, x, y, depth, color);
+            RenderUtil.buildArcVertex(vertexConsumer, matrix4f, x, y, depth, degree_start, degree_end, radius, getColor(), true);
+            RenderUtil.buildPointVertex(vertexConsumer, matrix4f, x, y, depth, getColor());
         };
-    }
-
-    private Rect calculateMiniBoundingRect(){
-        List<Float> horizontal  = new ArrayList<>();
-        List<Float> vertical  = new ArrayList<>();
-
-        horizontal.add(x);
-        horizontal.add(MathM.COS[degree_start] * radius + x);
-        horizontal.add(MathM.COS[degree_end] * radius + x);
-
-        vertical.add(y);
-        vertical.add(MathM.SIN[degree_start] * radius + y);
-        vertical.add(MathM.SIN[degree_end] * radius + y);
-
-        int i = 3;
-        for (int a = (int) (Math.ceil(degree_start * 4 / 360.0f)) * 90; a < degree_end; a += 90, i++)
-        {
-            horizontal.add(MathM.COS[a] * radius + x);
-            vertical.add(MathM.SIN[a] * radius + y);
-        }
-
-        horizontal.sort(Comparator.naturalOrder());
-        vertical.sort(Comparator.naturalOrder());
-
-        return new Rect(horizontal.getFirst(), vertical.getFirst(), horizontal.getLast() - horizontal.getFirst(), vertical.getLast() - vertical.getFirst());
     }
 }

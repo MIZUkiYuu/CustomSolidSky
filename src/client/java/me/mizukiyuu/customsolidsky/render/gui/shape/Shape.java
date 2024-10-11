@@ -4,7 +4,6 @@ import me.mizukiyuu.customsolidsky.render.color.Color;
 import me.mizukiyuu.customsolidsky.util.math.Vec2f;
 import me.mizukiyuu.customsolidsky.util.render.RenderUtil;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import org.joml.Matrix4f;
 
@@ -25,7 +24,6 @@ public abstract class Shape<T extends  Shape<T>> {
     // stroke
     protected float strokeSize;
     protected Color strokeColor;
-    protected Color previousColor;
 
     // specify rendering process
     protected Consumer<DrawContext> renderConsumer;
@@ -34,13 +32,16 @@ public abstract class Shape<T extends  Shape<T>> {
     protected Matrix4f matrix4f;
     protected VertexConsumer vertexConsumer;
 
+    protected float previousX;
+    protected float previousY;
+    protected Color previousColor;
+
 
     public Shape(float x, float y, List<Color> colorList){
         this.x = x;
         this.y = y;
         this.colorList = colorList;
         this.renderConsumer = defaultRenderConsumer();
-        updateBoundingRect();
     }
 
     public Shape(float x, float y, Color color) {
@@ -56,7 +57,6 @@ public abstract class Shape<T extends  Shape<T>> {
 
     public T setX(float x) {
         this.x = x;
-        updateBoundingRect();
         return (T) this;
     }
 
@@ -66,7 +66,6 @@ public abstract class Shape<T extends  Shape<T>> {
 
     public T setY(float y) {
         this.y = y;
-        updateBoundingRect();
         return (T) this;
     }
 
@@ -77,7 +76,6 @@ public abstract class Shape<T extends  Shape<T>> {
     public T setPos(float x, float y){
         this.x = x;
         this.y = y;
-        updateBoundingRect();
         return (T) this;
     }
 
@@ -143,12 +141,16 @@ public abstract class Shape<T extends  Shape<T>> {
 
 
     public abstract T clone();
+    public abstract boolean inside(float x, float y);
     public abstract void enableStroke();
     public abstract void disableStroke();
-    public abstract boolean inside(float x, float y);
-    public abstract void updateBoundingRect();
-    public abstract Consumer<DrawContext> defaultRenderConsumer();
 
+    protected abstract void updateBoundingRect();
+    protected abstract Consumer<DrawContext> defaultRenderConsumer();
+
+    public List<Color> cloneColorList(){
+        return Color.cloneColorListOf(colorList);
+    }
 
     /**
      * *** This method must be called to enable stroke. ***
@@ -170,28 +172,9 @@ public abstract class Shape<T extends  Shape<T>> {
     }
 
     public void renderBoundingRect(DrawContext drawContext, Color color){
-        vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderLayer.getDebugLineStrip(2));
-        matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
-
-        float x = boundingRect.x;
-        float y = boundingRect.y;
-        float width = boundingRect.width;
-        float height = boundingRect.height;
-        int r = color.getRed();
-        int g = color.getGreen();
-        int b = color.getBlue();
-        int a = color.getAlphaInt();
-
-        vertexConsumer.vertex(matrix4f, x, y, 0).color(r, g, b, a);
-        vertexConsumer.vertex(matrix4f, x, y + height, 0).color(r, g, b, a);
-        vertexConsumer.vertex(matrix4f, x + width, y + height, 0).color(r, g, b, a);
-        vertexConsumer.vertex(matrix4f, x + width, y, 0).color(r, g, b, a);
-
-        drawContext.draw();
+        updateBoundingRect();
+        RenderUtil.renderRectWireframe(drawContext, boundingRect, color);
     }
 
-    public List<Color> cloneColorList(){
-        return Color.cloneColorListOf(colorList);
-    }
 }
 

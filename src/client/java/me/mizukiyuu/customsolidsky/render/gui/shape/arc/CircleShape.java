@@ -1,7 +1,6 @@
 package me.mizukiyuu.customsolidsky.render.gui.shape.arc;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
-import me.mizukiyuu.customsolidsky.render.gui.shape.Rect;
 import me.mizukiyuu.customsolidsky.render.gui.shape.Shape;
 import me.mizukiyuu.customsolidsky.util.render.RenderUtil;
 import net.minecraft.client.gui.DrawContext;
@@ -12,6 +11,9 @@ import java.util.function.Consumer;
 public class CircleShape extends Shape<CircleShape> {
 
     protected float radius;
+
+    protected float previousRadius;
+
 
     public CircleShape(float x, float y, float radius, List<Color> colorList) {
         super(x, y, colorList);
@@ -40,12 +42,16 @@ public class CircleShape extends Shape<CircleShape> {
     }
 
     @Override
-    public void enableStroke() {
+    public void enableStroke(){
+        previousRadius = radius;
+        previousColor = getColor();
+
+        setRadius(radius + strokeSize).setColor(strokeColor);
     }
 
     @Override
-    public void disableStroke() {
-
+    public void disableStroke(){
+        setRadius(previousRadius).setColor(previousColor);
     }
 
     float subX, subY;
@@ -58,7 +64,7 @@ public class CircleShape extends Shape<CircleShape> {
 
     @Override
     public void updateBoundingRect() {
-        boundingRect = new Rect(x - radius, y - radius, radius * 2, radius * 2);
+        boundingRect.set(x - radius - strokeSize, y - radius - strokeSize, radius * 2 + strokeSize * 2, radius * 2 + strokeSize * 2);
     }
 
     @Override

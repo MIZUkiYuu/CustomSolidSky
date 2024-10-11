@@ -35,7 +35,7 @@ public class CustomSolidSkyOptionsScreen extends Screen {
 
     @Override
     public void close() {
-        CustomsolidskyClient.SKY_OPTIONS.hideHudAndPlayer = true;
+        CustomsolidskyClient.SKY_OPTIONS.hideHudAndPlayer = false;
         this.client.setScreen(parent);
     }
 }

@@ -15,6 +15,9 @@ public class RectShape extends Shape<RectShape> {
     protected float height;
     protected float cornerRadius;
 
+    protected float previousWidth;
+    protected float previousHeight;
+
 
     public RectShape(float x, float y, float width, float height, float cornerRadius, List<Color> colorList) {
         super(x, y, colorList);
@@ -58,7 +61,6 @@ public class RectShape extends Shape<RectShape> {
     public RectShape setDim(float width, float height){
         this.width = width;
         this.height = height;
-        updateBoundingRect();
         return this;
     }
 
@@ -81,15 +83,19 @@ public class RectShape extends Shape<RectShape> {
 
     @Override
     public void enableStroke() {
-        setPos(x - strokeSize, y - strokeSize).setDim(width + strokeSize * 2, height + strokeSize * 2);
+        previousX = x;
+        previousY = y;
+        previousWidth = width;
+        previousHeight = height;
         previousColor = getColor();
-        setColor(strokeColor);
+
+        setPos(x - strokeSize, y - strokeSize).setDim(width + strokeSize * 2, height + strokeSize * 2).setColor(strokeColor);
+
     }
 
     @Override
     public void disableStroke() {
-        setPos(x + strokeSize, y + strokeSize).setDim(width - strokeSize * 2, height - strokeSize * 2);
-        setColor(previousColor);
+        setPos(previousX, previousY).setDim(previousWidth, previousHeight).setColor(previousColor);
     }
 
     @Override
@@ -100,20 +106,13 @@ public class RectShape extends Shape<RectShape> {
 
     @Override
     public void updateBoundingRect() {
-        boundingRect.set(x, y, width, height);
+        boundingRect.set(x - strokeSize, y - strokeSize,width + strokeSize * 2, height + strokeSize * 2);
     }
 
     @Override
     public Consumer<DrawContext> defaultRenderConsumer() {
         return drawContext -> {
             matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
-
-            int depth = getDepth();
-            float x = getX();
-            float y = getY();
-            float width = getWidth();
-            float height = getHeight();
-            float cornerRadius = getCornerRadius();
 
             if (cornerRadius == 0) {
                 vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderUtil.GUI_TRIANGLE_STRIP);
@@ -146,11 +145,6 @@ public class RectShape extends Shape<RectShape> {
             vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderUtil.GUI_TRIANGLE_STRIP);
             matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
 
-            float x = getX();
-            float y = getY();
-            float width = getWidth();
-            float height = getHeight();
-            int depth = getDepth();
             List<Color> colorList = getColorList();
 
             Color colorTop = new Color(colorList.get(0));

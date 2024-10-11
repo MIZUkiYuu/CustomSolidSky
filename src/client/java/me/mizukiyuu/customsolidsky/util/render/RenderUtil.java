@@ -2,6 +2,7 @@ package me.mizukiyuu.customsolidsky.util.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.mizukiyuu.customsolidsky.render.color.Color;
+import me.mizukiyuu.customsolidsky.render.gui.shape.Rect;
 import me.mizukiyuu.customsolidsky.render.gui.shape.Shape;
 import me.mizukiyuu.customsolidsky.util.math.MathM;
 import net.minecraft.client.gui.DrawContext;
@@ -53,7 +54,7 @@ public class RenderUtil {
             buildPointVertex(vertexConsumer, matrix4f, MathM.COS[i] * radius + x, - MathM.SIN[i] * radius + y, depth, color);
         }
     }
-
+    
     public static void renderShape(DrawContext drawContext, Shape<?> shape){
         shape.getRenderConsumer().accept(drawContext);
         drawContext.draw();
@@ -67,7 +68,11 @@ public class RenderUtil {
         });
     }
 
-    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape, Consumer<DrawContext> larger_shape){
+    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape, Shape<?> larger_shape) {
+        renderShapeWithStencil(drawContext, shape, drawContext1 -> larger_shape.getRenderConsumer().accept(drawContext1));
+    }
+
+    public static void renderShapeWithStencil(DrawContext drawContext, Shape<?> shape, Consumer<DrawContext> larger_shape_consumer){
 
         GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT);
 
@@ -88,7 +93,7 @@ public class RenderUtil {
         RenderSystem.disableDepthTest();
 
         // render large shape
-        larger_shape.accept(drawContext);
+        larger_shape_consumer.accept(drawContext);
         drawContext.getVertexConsumers().draw();
 
         // reset
@@ -96,5 +101,28 @@ public class RenderUtil {
         RenderSystem.stencilFunc(GL11.GL_ALWAYS, 0, 0xFF);
         GL11.glDisable(GL11.GL_STENCIL_TEST);
         RenderSystem.enableDepthTest();
+        GL11.glDepthFunc(GL11.GL_LEQUAL); // 515, default value in minecraft
+    }
+
+    public static void renderRectWireframe(DrawContext drawContext, Rect rect, Color color){
+        VertexConsumer vertexConsumer = drawContext.getVertexConsumers().getBuffer(RenderLayer.getDebugLineStrip(1));
+        Matrix4f matrix4f = drawContext.getMatrices().peek().getPositionMatrix();
+
+        float x = rect.getX();
+        float y = rect.getY();
+        float width = rect.getWidth();
+        float height = rect.getHeight();
+        int r = color.getRed();
+        int g = color.getGreen();
+        int b = color.getBlue();
+        int a = color.getAlphaInt();
+
+        vertexConsumer.vertex(matrix4f, x, y, 0).color(r, g, b, a);
+        vertexConsumer.vertex(matrix4f, x, y + height, 0).color(r, g, b, a);
+        vertexConsumer.vertex(matrix4f, x + width, y + height, 0).color(r, g, b, a);
+        vertexConsumer.vertex(matrix4f, x + width, y, 0).color(r, g, b, a);
+        vertexConsumer.vertex(matrix4f, x, y, 0).color(r, g, b, a);
+
+        drawContext.draw();
     }
 }
