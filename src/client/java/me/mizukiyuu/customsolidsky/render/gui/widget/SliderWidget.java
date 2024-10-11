@@ -1,7 +1,6 @@
 package me.mizukiyuu.customsolidsky.render.gui.widget;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
-import me.mizukiyuu.customsolidsky.render.gui.shape.arc.CircleShape;
 import me.mizukiyuu.customsolidsky.render.gui.shape.arc.CircularSectorShape;
 import me.mizukiyuu.customsolidsky.util.math.Vec2f;
 import net.minecraft.client.gui.DrawContext;
