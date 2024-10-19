@@ -34,32 +34,32 @@ public class CommandRegister {
                     literal(SKY_COLOR)
                             .then(literal(ENABLE)
                                     .executes(c -> {
-                                        CustomsolidskyClient.SKY_OPTIONS.setEnable(true);
+                                        CustomsolidskyClient.SKY_COLOR_SETTING.enable();
                                         return Command.SINGLE_SUCCESS;
                                     })
                             )
                             .then(literal(DISABLE)
                                     .executes(c -> {
-                                        CustomsolidskyClient.SKY_OPTIONS.setEnable(false);
+                                        CustomsolidskyClient.SKY_COLOR_SETTING.disable();
                                         return Command.SINGLE_SUCCESS;
                                     })
                             )
                             .then(literal(SET)
                                     .then(argument(COLOR_R_OR_STRING, mutableColorArg(0, 255))
                                             .executes(c -> {
-                                                CustomsolidskyClient.SKY_OPTIONS.skyColor.set(getColor(c, COLOR_R_OR_STRING));
+                                                CustomsolidskyClient.SKY_COLOR_SETTING.skyColor.set(getColor(c, COLOR_R_OR_STRING));
                                                 return Command.SINGLE_SUCCESS;
                                             })
                                             .then(argument(COLOR_G, integer(0, 255))
                                                     .executes(c -> {
-                                                        CustomsolidskyClient.SKY_OPTIONS.skyColor
+                                                        CustomsolidskyClient.SKY_COLOR_SETTING.skyColor
                                                                 .setRed(getColor(c, COLOR_R_OR_STRING).getRed())
                                                                 .setGreen(getInteger(c, COLOR_G));
                                                         return Command.SINGLE_SUCCESS;
                                                     })
                                                     .then(argument(COLOR_B, integer(0, 255))
                                                             .executes(c -> {
-                                                                CustomsolidskyClient.SKY_OPTIONS.skyColor.set(getColor(c, COLOR_R_OR_STRING).getRed(), getInteger(c, COLOR_G), getInteger(c, COLOR_B));
+                                                                CustomsolidskyClient.SKY_COLOR_SETTING.skyColor.set(getColor(c, COLOR_R_OR_STRING).getRed(), getInteger(c, COLOR_G), getInteger(c, COLOR_B));
                                                                 return Command.SINGLE_SUCCESS;
                                                             })
                                                     )
@@ -69,14 +69,14 @@ public class CommandRegister {
                             .then(literal(FOG)
                                     .then(argument(FOG, bool())
                                             .executes(c -> {
-                                                CustomsolidskyClient.SKY_OPTIONS.canRenderFog = getBool(c, FOG);
+                                                CustomsolidskyClient.SKY_COLOR_SETTING.canRenderFog = getBool(c, FOG);
                                                 return Command.SINGLE_SUCCESS;
                                             })
                                     )
                             )
                             .then(literal(RESET)
                                     .executes((c) -> {
-                                        CustomsolidskyClient.SKY_OPTIONS.resetSkyColor();
+                                        CustomsolidskyClient.SKY_COLOR_SETTING.resetSkyColor();
                                         return Command.SINGLE_SUCCESS;
                                     })
                             )

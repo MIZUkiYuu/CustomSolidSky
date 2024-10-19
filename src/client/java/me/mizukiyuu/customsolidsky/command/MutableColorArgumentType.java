@@ -8,7 +8,9 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import me.mizukiyuu.customsolidsky.client.CustomsolidskyClient;
+import me.mizukiyuu.customsolidsky.client.SkyColorSetting;
 import me.mizukiyuu.customsolidsky.render.color.Color;
+import me.mizukiyuu.customsolidsky.render.color.Colors;
 import net.minecraft.text.Text;
 
 import java.util.Arrays;
@@ -49,8 +51,8 @@ public class MutableColorArgumentType implements ArgumentType<Color> {
 
             if (s.startsWith("#") && s.length() == 7) {
                 return new Color(s);
-            } else if (Color.COLOR_PRESET_STRING_MAP.containsKey(s)) {
-                return Color.COLOR_PRESET_STRING_MAP.get(s);
+            } else if (Colors.COLORS_STRING_LIST.contains(s)) {
+                return Enum.valueOf(Colors.class, s.toUpperCase()).color;
             } else {
                 Text warning = Text.translatable("customsolidsky.commands.skycolor.no_match", s);
                 throw new CommandSyntaxException(new SimpleCommandExceptionType(warning), warning);
@@ -64,12 +66,12 @@ public class MutableColorArgumentType implements ArgumentType<Color> {
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().createWithContext(reader, i, maximum);
         }
 
-        return new Color(i, CustomsolidskyClient.SKY_OPTIONS.skyColor.getGreen(), CustomsolidskyClient.SKY_OPTIONS.skyColor.getBlue());
+        return new Color(i, CustomsolidskyClient.SKY_COLOR_SETTING.skyColor.getGreen(), CustomsolidskyClient.SKY_COLOR_SETTING.skyColor.getBlue());
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        Color.COLOR_PRESET_STRING_MAP.forEach((s, color) -> builder.suggest(s));
+        Colors.COLORS_STRING_LIST.forEach(builder::suggest);
         builder.suggest("128 128 128");
         builder.suggest("#66ccff");
         return builder.buildFuture();

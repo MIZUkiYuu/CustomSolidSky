@@ -1,8 +1,8 @@
 package me.mizukiyuu.customsolidsky.render.gui.widget;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
-import me.mizukiyuu.customsolidsky.render.gui.shape.RectShape;
-import me.mizukiyuu.customsolidsky.render.gui.shape.arc.CircularSectorShape;
+import me.mizukiyuu.customsolidsky.render.color.Colors;
+import me.mizukiyuu.customsolidsky.render.gui.shape.circle.CircularSectorShape;
 import me.mizukiyuu.customsolidsky.util.math.Vec2f;
 import net.minecraft.client.gui.DrawContext;
 
@@ -13,10 +13,10 @@ public class SliderWidget extends Widget {
 
     private double value;
     private Vec2f valuePos;
-    private RectShape shape;
+    private CircularSectorShape shape;
 
 
-    private static final List<Color> SLIDER_COLORS = Arrays.asList(Color.of(Color.WHITE), Color.of(Color.BLACK), Color.of(Color.BLACK), Color.of(Color.RED));
+    private static final List<Color> SLIDER_COLORS = Arrays.asList(Color.of(Colors.WHITE), Color.of(Colors.BLACK), Color.of(Colors.BLACK), Color.of(Colors.RED));
 
     public SliderWidget(float x, float y, float width, float height) {
         super(x, y, width, height);
@@ -24,13 +24,13 @@ public class SliderWidget extends Widget {
 
     @Override
     public void init() {
-        shape = new RectShape(x, y, 80, 80, 5, Color.of(Color.WHITE).setAlpha(0.6f))
-                .stroke(8, new Color(Color.RED).setAlpha(0.6f));
+        shape = new CircularSectorShape(x, y, 40, 80, 160, Color.of(Colors.WHITE).setAlpha(0.6f))
+                .outline(8, Color.of(Colors.RED).setAlpha(0.6f));
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         shape.render(context);
-        shape.renderBoundingRect(context, Color.BLUE);
+        shape.renderBoundingRect(context, Colors.BLUE.color);
     }
 }

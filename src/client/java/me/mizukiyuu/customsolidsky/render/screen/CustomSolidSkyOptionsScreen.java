@@ -1,6 +1,7 @@
 package me.mizukiyuu.customsolidsky.render.screen;
 
 import me.mizukiyuu.customsolidsky.client.CustomsolidskyClient;
+import me.mizukiyuu.customsolidsky.client.SkyColorSetting;
 import me.mizukiyuu.customsolidsky.render.component.ColorPickerComponent;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
@@ -35,7 +36,7 @@ public class CustomSolidSkyOptionsScreen extends Screen {
 
     @Override
     public void close() {
-        CustomsolidskyClient.SKY_OPTIONS.hideHudAndPlayer = false;
+        CustomsolidskyClient.SKY_COLOR_SETTING.hideHudAndPlayer = false;
         this.client.setScreen(parent);
     }
 }

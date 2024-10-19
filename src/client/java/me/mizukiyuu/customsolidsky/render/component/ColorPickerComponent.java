@@ -1,6 +1,7 @@
 package me.mizukiyuu.customsolidsky.render.component;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
+import me.mizukiyuu.customsolidsky.render.color.Colors;
 import me.mizukiyuu.customsolidsky.render.gui.widget.SliderWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
@@ -19,7 +20,7 @@ public class ColorPickerComponent implements Drawable, Element, Selectable {
 
     // slider
     SliderWidget slider;
-    private static final List<Color> HUE_BAR_COLORS = Arrays.asList(Color.RED, Color.MAGENTA, Color.BLUE, Color.CYAN, Color.GREEN, Color.YELLOW, Color.RED);
+    private static final List<Color> HUE_BAR_COLORS = Arrays.asList(Colors.RED.color, Colors.MAGENTA.color, Colors.BLUE.color, Colors.CYAN.color, Colors.GREEN.color, Colors.YELLOW.color, Colors.RED.color);
 
     /**
      * @param x x coordinate of the slider center point

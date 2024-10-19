@@ -1,6 +1,7 @@
 package me.mizukiyuu.customsolidsky.mixin.client.gui;
 
 import me.mizukiyuu.customsolidsky.client.CustomsolidskyClient;
+import me.mizukiyuu.customsolidsky.client.SkyColorSetting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.GameRenderer;
 import org.objectweb.asm.Opcodes;
@@ -21,7 +22,7 @@ public class GameRendererMixin {
             )
     )
     private boolean renderHoldItem(GameRenderer gr){
-        return ((GameRendererAccessor) MinecraftClient.getInstance().gameRenderer).getRenderHand() && !CustomsolidskyClient.SKY_OPTIONS.hideHudAndPlayer;
+        return ((GameRendererAccessor) MinecraftClient.getInstance().gameRenderer).getRenderHand() && !CustomsolidskyClient.SKY_COLOR_SETTING.hideHudAndPlayer;
     }
 }
 

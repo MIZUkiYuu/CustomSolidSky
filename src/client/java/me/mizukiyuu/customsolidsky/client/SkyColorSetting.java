@@ -1,10 +1,14 @@
 package me.mizukiyuu.customsolidsky.client;
 
 import me.mizukiyuu.customsolidsky.render.color.Color;
+import me.mizukiyuu.customsolidsky.render.color.Colors;
 import me.mizukiyuu.customsolidsky.util.math.Vec2f;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.CloudRenderMode;
 
 public class SkyColorSetting {
-    public static Color DEFAULT_SKY_COLOR = Color.of(Color.GRAY);
+
+    public static Color DEFAULT_SKY_COLOR = Color.of(Colors.GRAY);
     public Color skyColor = Color.of(DEFAULT_SKY_COLOR);
     public boolean enable = false;
 
@@ -14,16 +18,36 @@ public class SkyColorSetting {
     public boolean isBSMapExtended = false;
 
     // details
-    public Boolean canRenderSky = true;
-    public Boolean canRenderFog = true;
+    public boolean canRenderSky = true;
+    public boolean canRenderFog = true;
+    public boolean canDisplayVignette = false;
 
     // gui
-    public Boolean hideHudAndPlayer = false;
+    public boolean hideHudAndPlayer = false;
 
-    public void setEnable(boolean b) {
-        enable = b;
-        canRenderSky = !b;
-        canRenderFog = !b;
+    private CloudRenderMode cloudRenderMode;
+
+
+    public void enable() {
+        if(enable) return;
+
+        enable = true;
+        canRenderSky = false;
+        canRenderFog = false;
+        canDisplayVignette = false;
+
+        cloudRenderMode = MinecraftClient.getInstance().options.getCloudRenderModeValue();
+        MinecraftClient.getInstance().options.getCloudRenderMode().setValue(CloudRenderMode.OFF);
+    }
+
+    public void disable(){
+        if(!enable) return;
+
+        enable = false;
+        canRenderSky = true;
+        canRenderFog = true;
+        canDisplayVignette = true;
+        MinecraftClient.getInstance().options.getCloudRenderMode().setValue(cloudRenderMode);
     }
 
     public void resetSkyColor() {

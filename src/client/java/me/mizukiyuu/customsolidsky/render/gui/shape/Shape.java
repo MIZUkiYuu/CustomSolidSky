@@ -1,51 +1,44 @@
 package me.mizukiyuu.customsolidsky.render.gui.shape;
 
+import me.mizukiyuu.customsolidsky.render.IRenderBuffer;
 import me.mizukiyuu.customsolidsky.render.color.Color;
+import me.mizukiyuu.customsolidsky.render.gui.shape.rect.Rect;
 import me.mizukiyuu.customsolidsky.util.math.Vec2f;
-import me.mizukiyuu.customsolidsky.util.render.RenderUtil;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.VertexConsumer;
-import org.joml.Matrix4f;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class Shape<T extends  Shape<T>> {
 
-    private List<Color> colorList;
-
     protected float x;
     protected float y;
+    private List<Color> colorList;
 
     protected int depth;
     protected Rect boundingRect = new Rect(0, 0, 0, 0);
 
-    // stroke
-    protected float strokeSize;
-    protected Color strokeColor;
+    // outline
+    protected float outlineSize;
+    protected Color outlineColor;
 
     // specify rendering process
-    protected Consumer<DrawContext> renderConsumer;
+    protected IRenderBuffer renderBuffer;
 
     // cache variables
-    protected Matrix4f matrix4f;
-    protected VertexConsumer vertexConsumer;
-
-    protected float previousX;
-    protected float previousY;
     protected Color previousColor;
+    protected Tessellator tessellator = Tessellator.getInstance();
+    protected BufferBuilder buffer;
 
 
     public Shape(float x, float y, List<Color> colorList){
         this.x = x;
         this.y = y;
         this.colorList = colorList;
-        this.renderConsumer = defaultRenderConsumer();
-    }
-
-    public Shape(float x, float y, Color color) {
-        this(x, y, Arrays.asList(color, color));
+        this.renderBuffer = defaultRenderBuffer();
     }
 
 
@@ -57,6 +50,7 @@ public abstract class Shape<T extends  Shape<T>> {
 
     public T setX(float x) {
         this.x = x;
+        updateBoundingRect();
         return (T) this;
     }
 
@@ -66,6 +60,7 @@ public abstract class Shape<T extends  Shape<T>> {
 
     public T setY(float y) {
         this.y = y;
+        updateBoundingRect();
         return (T) this;
     }
 
@@ -76,6 +71,7 @@ public abstract class Shape<T extends  Shape<T>> {
     public T setPos(float x, float y){
         this.x = x;
         this.y = y;
+        updateBoundingRect();
         return (T) this;
     }
 
@@ -110,71 +106,113 @@ public abstract class Shape<T extends  Shape<T>> {
         return boundingRect;
     }
 
-    public float getStrokeSize() {
-        return strokeSize;
+    public float getOutlineSize() {
+        return outlineSize;
     }
 
-    public T setStrokeSize(float strokeSize) {
-        this.strokeSize = strokeSize;
+    public T setOutlineSize(float outlineSize) {
+        this.outlineSize = outlineSize;
+        updateBoundingRect();
         return (T) this;
     }
 
-    public Color getStrokeColor() {
-        return strokeColor;
+    public Color getOutlineColor() {
+        return outlineColor;
     }
 
-    public T setStrokeColor(Color strokeColor) {
-        this.strokeColor = strokeColor;
+    public T setOutlineColor(Color outlineColor) {
+        this.outlineColor = outlineColor;
         return (T) this;
     }
 
-    public Consumer<DrawContext> getRenderConsumer() {
-        return renderConsumer;
+    public IRenderBuffer getRenderBuffer() {
+        return renderBuffer;
     }
 
-    public T setRenderConsumer(Consumer<DrawContext> renderConsumer) {
-        this.renderConsumer = renderConsumer;
+    public T setRenderBuffer(IRenderBuffer IRenderBuffer) {
+        this.renderBuffer = IRenderBuffer;
         return (T) this;
+    }
+
+    public BufferBuilder getBuffer(VertexFormat.DrawMode drawMode){
+        return tessellator.begin(drawMode, VertexFormats.POSITION_COLOR);
     }
 
     // endregion ----------------------------------------------------------------------------------------------------
 
 
     public abstract T clone();
-    public abstract boolean inside(float x, float y);
-    public abstract void enableStroke();
-    public abstract void disableStroke();
 
+    /**
+     * 检查鼠标指针是否在图形内部 </br>
+     * Check if the mouse pointer is inside the shape
+     * @param mouseX the X coordinate of the mouse pointer. 鼠标指针的 X 坐标
+     * @param mouseY the Y coordinate of the mouse pointer. 鼠标指针的 Y 坐标
+     */
+    public abstract boolean isMouseInShape(float mouseX, float mouseY);
+
+    protected abstract void setOutline();
+    protected abstract void resetOutline();
     protected abstract void updateBoundingRect();
-    protected abstract Consumer<DrawContext> defaultRenderConsumer();
+
+    public abstract IRenderBuffer defaultRenderBuffer();
 
     public List<Color> cloneColorList(){
         return Color.cloneColorListOf(colorList);
     }
 
     /**
-     * *** This method must be called to enable stroke. ***
-     * @param size the size of the stroke
-     * @param color the color of the stroke
+     * 检查鼠标指针是否在矩形包裹框内部 </br>
+     * Check if the mouse pointer is inside the bounding rect of the shape
+     * @param mouseX the X coordinate of the mouse pointer. 鼠标指针的 X 坐标
+     * @param mouseY the Y coordinate of the mouse pointer. 鼠标指针的 Y 坐标
      */
-    public T stroke(float size, Color color){
-        setStrokeSize(size);
-        setStrokeColor(color);
+    public boolean isMouseInBoundingRect(float mouseX, float mouseY){
+        return boundingRect.isIn(mouseX, mouseY);
+    }
+
+    /**
+     * 调用此方法以渲染描边 </br>
+     * This method must be called to render outline
+     * @param size the size of the outline. 描边大小
+     * @param color the color of the outline. 描边颜色
+     */
+    public T outline(float size, Color color){
+        setOutlineSize(size);
+        setOutlineColor(color);
         return (T) this;
     }
 
+    public void enableOutline(){
+        setOutline();
+        previousColor = getColor();
+        setColor(outlineColor);
+    }
+
+    public void disableOutline(){
+        resetOutline();
+        setColor(previousColor);
+    }
+
     public void render(DrawContext drawContext){
-        if(strokeSize == 0){
-            RenderUtil.renderShape(drawContext, this);
+        if(outlineSize == 0){
+            ShapeRenderer.render(drawContext, renderBuffer);
         }else {
-            RenderUtil.renderShapeWithStencil(drawContext, this);
+            ShapeRenderer.renderShapeWithStencil(
+                    drawContext,
+                    renderBuffer,
+                    matrix4f -> {
+                        enableOutline();
+                        renderBuffer.build(matrix4f);
+                        disableOutline();
+                        return buffer;
+                    }
+            );
         }
     }
 
     public void renderBoundingRect(DrawContext drawContext, Color color){
-        updateBoundingRect();
-        RenderUtil.renderRectWireframe(drawContext, boundingRect, color);
+        boundingRect.renderRectWireframe(drawContext, color);
     }
-
 }
 

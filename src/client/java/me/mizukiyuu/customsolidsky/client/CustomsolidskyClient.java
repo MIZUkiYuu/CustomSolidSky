@@ -10,8 +10,7 @@ public class CustomsolidskyClient implements ClientModInitializer {
     public static final String MOD_NAME = "CustomSolidSky";
 
     public static final Logger LOGGER = LogManager.getLogger(MOD_NAME);
-
-    public static final SkyColorSetting SKY_OPTIONS = new SkyColorSetting();
+    public static final SkyColorSetting SKY_COLOR_SETTING = new SkyColorSetting();
 
     @Override
     public void onInitializeClient() {

@@ -1,6 +1,7 @@
 package me.mizukiyuu.customsolidsky.mixin.client.gui;
 
 import me.mizukiyuu.customsolidsky.client.CustomsolidskyClient;
+import me.mizukiyuu.customsolidsky.client.SkyColorSetting;
 import me.mizukiyuu.customsolidsky.render.screen.CustomSolidSkyOptionsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
@@ -31,7 +32,7 @@ public abstract class OptionsScreenMixin extends Screen {
             TextIconButtonWidget.builder(
                             SCREEN_TITLE_TEXT,
                             button -> {
-                                CustomsolidskyClient.SKY_OPTIONS.hideHudAndPlayer = true;
+                                CustomsolidskyClient.SKY_COLOR_SETTING.hideHudAndPlayer = true;
                                 this.client.setScreen(new CustomSolidSkyOptionsScreen(SCREEN_TITLE_TEXT, this));
                             },
                             true

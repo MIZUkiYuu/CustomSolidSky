@@ -10,28 +10,10 @@ import java.util.stream.Collectors;
 
 public class Color implements Cloneable{
 
-    public static final Color TRANSPARENT = of(0, 0, 0, 0);
-    public static final Color WHITE = of(255, 255, 255, 1.0f);
-    public static final Color BLACK = of(0, 0, 0, 1.0f);
-    public static final Color GRAY = of(64, 64, 64, 1.0f);
-    public static final Color RED = of(255, 0, 0, 1.0f);
-    public static final Color GREEN = of(0, 255, 0, 1.0f);
-    public static final Color BLUE = of(0, 0, 255, 1.0f);
-    public static final Color YELLOW = of(255, 255, 0, 1.0f);
-    public static final Color MAGENTA = of(255, 0, 255, 1.0f);
-    public static final Color CYAN = of(0, 255, 255, 1.0f);
-
-    public static final HashMap<String, Color> COLOR_PRESET_STRING_MAP = new HashMap<>();
-
     int red;
     int green;
     int blue;
     float alpha;
-
-
-    static {
-        List.of(WHITE, BLACK, GRAY, RED, GREEN, BLUE, YELLOW, MAGENTA, CYAN).forEach(color -> COLOR_PRESET_STRING_MAP.put(color.toString().toLowerCase(), color));
-    }
 
     public Color(int r, int g, int b, float a) {
         this.red = r;
@@ -57,6 +39,10 @@ public class Color implements Cloneable{
 
     public static Color of(Color color){
         return new Color(color);
+    }
+
+    public static Color of(Colors colors){
+        return new Color(colors.color);
     }
 
     public static Color of(int r, int g, int b, float a){
